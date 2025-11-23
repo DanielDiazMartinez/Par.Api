@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Par.Api.Enums;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Par.Api.DTOs
 {
@@ -15,6 +16,7 @@ namespace Par.Api.DTOs
         public double Weight { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "The quantity must be at least 1.")]
+        [DefaultValue(1)]
         public int Quantity { get; set; }
     }
 }

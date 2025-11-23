@@ -2,8 +2,8 @@
 {
     public enum BoxSize
     {
-        Small,  // 35g
-        Medium, // 50g
-        Large   // 100g
+        Small,  
+        Medium, 
+        Large   
     }
 }

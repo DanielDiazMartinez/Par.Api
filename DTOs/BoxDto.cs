@@ -6,6 +6,10 @@ namespace Par.Api.DTOs
     {
         public int Id { get; set; }
         public BoxSize Size { get; set; }
+        public double CustomWeight { get; set; }
+        public double ? WeightRangeMin { get; set; }
+        public double ? WeightRangeMax { get; set; }
+
         public string Author { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
         public double TotalWeight { get; set; }

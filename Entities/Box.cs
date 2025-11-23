@@ -25,12 +25,7 @@ namespace Par.Api.Entities
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
         public double TotalWeight { get; private set; }
         public bool IsValid { get; private set; }
-        /// <summary>
-        /// Calculates and updates the validity of a box based on 3 business rules:
-        /// 1. Total weight within the permitted range (WeightRangeMin/Max)
-        /// 2. Authorized author according to creation time (Manager: 8 a.m. to 12 p.m., Operator: 12 p.m. to 5 p.m.)
-        /// 3. All products must be of the same type
-        /// </summary>
+        //Calculate Weight and Validity of the Box based on the rules
         public void UpdateValidity()
         {
             

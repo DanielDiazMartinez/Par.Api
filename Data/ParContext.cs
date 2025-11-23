@@ -21,37 +21,31 @@ namespace Par.Api.Data
 
             modelBuilder.Entity<Box>(entity =>
             {
-                /// <summary>
-                /// PropertyAccessMode.FieldDuringConstruction allows EF Core to directly access
-                /// the private field during entity construction, but use the public setter
-                /// afterwards.
-                /// </summary>
+
+                
+                //This allows ef core to write when it fetches data from the database, but it is not accessible from outside the class.
                 entity.Property(b => b.IsValid)
                       .UsePropertyAccessMode(PropertyAccessMode.FieldDuringConstruction);
 
                 entity.Property(b => b.TotalWeight)
                       .UsePropertyAccessMode(PropertyAccessMode.FieldDuringConstruction);
 
-                /// <summary>
-                /// Indexes on frequently queried fields to enhance read performance.
-                /// </summary>
+               
+                // Indexes on frequently queried fields to enhance read performance.
                 entity.HasIndex(b => b.IsValid);
                 entity.HasIndex(b => b.CreationDate); 
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
-                /// <summary>
-                /// Deleting a Box will also delete its associated Products.
-                /// </summary>
+                
+                //Deleting a Box will also delete its associated Products.
                 entity.HasOne(p => p.Box)
                       .WithMany(b => b.Products)
                       .HasForeignKey(p => p.BoxId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                /// <summary>
-                /// Conversión enum → string to store ProductType as string in the database.
-                /// </summary>
+                //Conversión enum → string to store ProductType as string in the database.
                 entity.Property(p => p.Type).HasConversion<string>();
             });
         }

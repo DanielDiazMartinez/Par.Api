@@ -119,7 +119,6 @@ namespace Par.Api.Services
             if (box == null)
                 return null;
 
-   
             if (patchDto.Size.HasValue)
                 box.Size = patchDto.Size.Value;
 
@@ -156,70 +155,47 @@ namespace Par.Api.Services
 
             return true;
         }
-
+        //Exports all boxes with their products to a CSV stream.
+        //With stream we can write large data without loading everything into memory at once.
         public async Task<Stream> GetBoxesExportStreamAsync()
         {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream, new UTF8Encoding(true), bufferSize: 1024, leaveOpen: true);
-
            
+            var boxes = await _context.Boxes
+                .AsNoTracking()
+                .Include(b => b.Products)
+                .ToListAsync();
+
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+
+            
             await writer.WriteLineAsync("ID;Author;Size;IsValid;Total Weight;Weight Min;Weight Max;Product Count;Date");
 
-            int batchSize = 1000;
-            int pageNumber = 0;
-            bool continueExporting = true;
-
-            while (continueExporting)
+           
+            foreach (var box in boxes)
             {
-                var batch = await _context.Boxes
-                    .AsNoTracking()
-                    .Skip(pageNumber * batchSize)
-                    .Take(batchSize)
-                    .Include(b => b.Products) 
-                    .ToListAsync();
-
-                if (!batch.Any())
-                {
-                    continueExporting = false;
-                    continue;
-                }
-
-                foreach (var box in batch)
-                {
-                    
-                    var weightMin = box.WeightRangeMin.HasValue ? box.WeightRangeMin.Value.ToString("F2") : "";
-                    var weightMax = box.WeightRangeMax.HasValue ? box.WeightRangeMax.Value.ToString("F2") : "";
-                    
-                    var line = $"{box.Id};{EscapeCsv(box.Author)};{box.Size};{box.IsValid};{box.TotalWeight:F2};{weightMin};{weightMax};{box.Products.Count};{box.CreationDate:yyyy-MM-dd HH:mm}";
-                    await writer.WriteLineAsync(line);
-                }
-
-                pageNumber++;
+                var weightMin = box.WeightRangeMin?.ToString("F2") ?? "";
+                var weightMax = box.WeightRangeMax?.ToString("F2") ?? "";
+                
+                var line = $"{box.Id};{box.Author};{box.Size};{box.IsValid};{box.TotalWeight:F2};{weightMin};{weightMax};{box.Products.Count};{box.CreationDate:yyyy-MM-dd HH:mm}";
+                await writer.WriteLineAsync(line);
             }
 
             await writer.FlushAsync();
-            stream.Position = 0; 
+            stream.Position = 0;
             return stream;
         }
-
+        //Exports all boxes to a CSV file in byte array format.
         public async Task<(byte[] content, string fileName)> ExportBoxesToCsvAsync()
-        {
+        {   
             var stream = await GetBoxesExportStreamAsync();
-            using (stream)
-            {
-                var fileContent = new byte[stream.Length];
-                await stream.ReadAsync(fileContent, 0, (int)stream.Length);
-                var fileName = $"Boxes_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
-                return (fileContent, fileName);
-            }
+            var fileContent = new byte[stream.Length];
+            await stream.ReadAsync(fileContent, 0, (int)stream.Length);
+            stream.Dispose();
+            
+            var fileName = $"Boxes_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            return (fileContent, fileName);
         }
 
-        private string EscapeCsv(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return "";
-            
-            if (input.Contains(";")) return $"\"{input}\"";
-            return input;
-        }
     }
 }

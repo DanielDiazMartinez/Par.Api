@@ -12,6 +12,9 @@ namespace Par.Api.Extensions
             {
                 Id = box.Id,
                 Size = box.Size,
+                CustomWeight = box.CustomWeight,
+                WeightRangeMin = box.WeightRangeMin,
+                WeightRangeMax = box.WeightRangeMax,
                 Author = box.Author,
                 CreationDate = box.CreationDate,
                 TotalWeight = box.TotalWeight,
