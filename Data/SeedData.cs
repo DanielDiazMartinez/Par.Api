@@ -19,7 +19,7 @@ namespace Par.Api.Data
             Console.WriteLine("--> Seeding 50,000 records... Please wait.");
 
             var stopwatch = Stopwatch.StartNew();
-            var random = Random.Shared; // Usar Random.Shared para mejor aleatoriedad
+            var random = Random.Shared; 
             var boxesToAdd = new List<Box>(50000); 
             var users = new[] { "Manager", "Operator" };
 

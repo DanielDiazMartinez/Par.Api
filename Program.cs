@@ -28,7 +28,28 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ParContext>();
         context.Database.Migrate();
-        await SeedData.InitializeAsync(services);
+        
+      
+        Console.WriteLine("Do you want to run the data seeder? (y/n): ");
+        var response = Console.ReadLine()?.Trim().ToLower();
+        
+        if (response == "s" || response == "si" || response == "y" || response == "yes")
+        {
+            if (!await context.Boxes.AnyAsync())
+            {
+                Console.WriteLine("Running seeder...");
+                await SeedData.InitializeAsync(services);
+                Console.WriteLine("Seeder executed successfully.");
+            }
+            else
+            {
+                Console.WriteLine("The database already contains data. Seeder will not be executed.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Seeder skipped.");
+        }
     }
     catch (Exception ex)
     {
@@ -45,7 +66,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//Endpoints
+// Endpoints
 app.MapBoxEndpoints();
 
 app.Run();

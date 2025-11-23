@@ -1,6 +1,92 @@
 @Par.Api_HostAddress = http://localhost:5158
 
-GET {{Par.Api_HostAddress}}/weatherforecast/
+### Get All Boxes (with pagination)
+GET {{Par.Api_HostAddress}}/api/boxes?page=1&pageSize=20
+Accept: application/json
+
+###
+
+### Get Box by ID
+GET {{Par.Api_HostAddress}}/api/boxes/1
+Accept: application/json
+
+###
+
+### Create a new Box
+POST {{Par.Api_HostAddress}}/api/boxes
+Content-Type: application/json
+
+{
+  "size": 1,
+  "customWeight": 3.5,
+  "author": "Manager",
+  "weightRangeMin": 10,
+  "weightRangeMax": 500,
+  "products": [
+    {
+      "name": "Product A",
+      "type": 0,
+      "weight": 2.5,
+      "quantity": 3
+    },
+    {
+      "name": "Product B",
+      "type": 1,
+      "weight": 1.8,
+      "quantity": 2
+    }
+  ]
+}
+
+###
+
+### Update a Box (PUT - replaces all data)
+PUT {{Par.Api_HostAddress}}/api/boxes/1
+Content-Type: application/json
+
+{
+  "size": 2,
+  "customWeight": 4.2,
+  "author": "Operator",
+  "weightRangeMin": 15,
+  "weightRangeMax": 600,
+  "products": [
+    {
+      "name": "Updated Product",
+      "type": 2,
+      "weight": 3.0,
+      "quantity": 5
+    }
+  ]
+}
+
+###
+
+### Partially Update a Box (PATCH - only specified fields)
+PATCH {{Par.Api_HostAddress}}/api/boxes/1
+Content-Type: application/json
+
+{
+  "customWeight": 5.0,
+  "author": "Manager"
+}
+
+###
+
+### Delete a Box
+DELETE {{Par.Api_HostAddress}}/api/boxes/1
+Accept: application/json
+
+###
+
+### Export All Boxes to CSV
+GET {{Par.Api_HostAddress}}/api/boxes/export
+Accept: text/csv
+
+###
+
+### Benchmark Export Performance
+GET {{Par.Api_HostAddress}}/api/boxes/benchmark
 Accept: application/json
 
 ###
